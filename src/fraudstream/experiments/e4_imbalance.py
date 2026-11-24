@@ -17,6 +17,7 @@ from fraudstream.evaluation.quality import (
 )
 from fraudstream.experiments.protocol import load_protocol
 from fraudstream.models.calibrate import PlattCalibrator
+from fraudstream.models.registry import load_model_config
 from fraudstream.models.train import IMBALANCE_VARIANTS, fit_lgbm_variant
 
 SELECTION_RULE = "max validation average precision"
@@ -28,8 +29,9 @@ def run(data: Path, out: Path, *, test_start: int = 20, gap: int = 2, validation
     y_val = p.visible[split.validation]
     y_test = p.truth[split.test]
     variants = {}
+    lgbm_config = load_model_config("lgbm")
     for variant in IMBALANCE_VARIANTS:
-        scorer = fit_lgbm_variant(variant, p.X[split.train], p.visible[split.train])
+        scorer = fit_lgbm_variant(variant, p.X[split.train], p.visible[split.train], lgbm_config)
         val_prob = scorer(p.X[split.validation])
         test_prob = scorer(p.X[split.test])
         calibrator = PlattCalibrator().fit(val_prob, y_val)

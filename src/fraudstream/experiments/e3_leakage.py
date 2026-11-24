@@ -8,7 +8,6 @@ from datetime import timedelta
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 import yaml
@@ -23,7 +22,9 @@ from fraudstream.evaluation.metrics import pick_threshold
 from fraudstream.evaluation.splits import temporal_split
 from fraudstream.features.backfill import backfill
 from fraudstream.features.spec import FEATURES
+from fraudstream.models.registry import load_model_config
 from fraudstream.models.train import train
+from fraudstream.timeline import ORIGIN
 
 
 def run(data: Path, out: Path, *, test_start: int = 20, gap: int = 2, validation: int = 4) -> None:
@@ -35,11 +36,11 @@ def run(data: Path, out: Path, *, test_start: int = 20, gap: int = 2, validation
     terminal_names = [spec.name for spec in FEATURES if spec.entity == "terminal"]
     frame = tx.merge(features[["tx_id", *names]], on="tx_id", validate="one_to_one")
     frame = frame.merge(reports, on="tx_id", how="left", validate="one_to_one")
-    days = (frame["event_ts"] - pd.Timestamp("2025-01-01")).dt.days.to_numpy()
+    days = (frame["event_ts"] - ORIGIN).dt.days.to_numpy()
     split = temporal_split(days, test_start, gap, validation)
     if not all(len(part) for part in (split.train, split.validation, split.test)):
         raise ValueError("train, validation and test splits must all be nonempty")
-    cutoff = (pd.Timestamp("2025-01-01") + timedelta(days=test_start)).to_pydatetime()
+    cutoff = (ORIGIN + timedelta(days=test_start)).to_pydatetime()
     visible = LabelView(pa.Table.from_pandas(frame[["event_ts", "available_ts"]]), cutoff).labels()
     truth = frame["is_fraud"].to_numpy(dtype=int)
     amounts = frame["amount"].to_numpy()
@@ -57,7 +58,7 @@ def run(data: Path, out: Path, *, test_start: int = 20, gap: int = 2, validation
     }
     results = {}
     for name, X in variants.items():
-        bundle = train("lgbm", X[split.train], visible[split.train], names)
+        bundle = train(load_model_config("lgbm"), X[split.train], visible[split.train], names)
         val_score = bundle.score(X[split.validation])
         threshold = pick_threshold("min_loss", visible[split.validation], val_score,
                                    amounts[split.validation], costs)
@@ -76,7 +77,7 @@ def run(data: Path, out: Path, *, test_start: int = 20, gap: int = 2, validation
     for outer_train, outer_test in cv.split(X, truth):
         training, holdout = train_test_split(outer_train, test_size=.2, stratify=truth[outer_train],
                                             random_state=0)
-        bundle = train("lgbm", X[training], truth[training], names)
+        bundle = train(load_model_config("lgbm"), X[training], truth[training], names)
         threshold = pick_threshold("min_loss", truth[holdout], bundle.score(X[holdout]),
                                    amounts[holdout], costs)
         score = bundle.score(X[outer_test])

@@ -40,3 +40,11 @@ def test_net_savings_accounts_for_missed_fraud_and_reviews():
     assert net_savings(y, [1, 1, 0, 0], amount, .5, costs) == 87
     with pytest.raises(ValueError):
         net_savings(y, [1], amount, .5, costs)
+
+
+def test_perfect_oracle_savings_equal_baseline_loss_minus_review_cost():
+    y = [1, 0, 1, 0]
+    amount = [100, 20, 40, 10]
+    costs = CostConfig(review_usd=5, fp_friction_usd=3, fraud_fixed_fee_usd=2)
+    baseline_loss = (100 + 40) + 2 * 2
+    assert net_savings(y, y, amount, .5, costs) == baseline_loss - 2 * 5

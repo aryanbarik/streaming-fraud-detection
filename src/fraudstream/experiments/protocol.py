@@ -5,7 +5,6 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 
@@ -13,8 +12,7 @@ from fraudstream.config import CostConfig
 from fraudstream.evaluation.labelview import LabelView
 from fraudstream.evaluation.splits import SplitIdx, temporal_split
 from fraudstream.features.spec import FEATURES
-
-ORIGIN = pd.Timestamp("2025-01-01")
+from fraudstream.timeline import ORIGIN
 
 
 @dataclass(frozen=True)

@@ -1,9 +1,10 @@
-"""Configuration models for simulation, costs and streaming."""
+"""Configuration models for simulation, costs, streaming and model baselines."""
 
 from pathlib import Path
+from typing import Literal
 
 import yaml
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class LabelConfig(BaseModel):
@@ -38,6 +39,17 @@ class CostConfig(BaseModel):
 class StreamConfig(BaseModel):
     broker: str = "localhost:9092"
     deadline_ms: float = Field(default=100, gt=0)
+
+
+class ModelConfig(BaseModel):
+    """Hyperparameters for one baseline; each field applies to the kinds noted."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    kind: Literal["lr", "lgbm", "iforest"]
+    n_estimators: int = Field(default=100, gt=0)  # lgbm, iforest
+    learning_rate: float = Field(default=0.1, gt=0)  # lgbm
+    num_leaves: int = Field(default=31, gt=1)  # lgbm
 
 
 def load_config(path: Path, model: type[BaseModel]) -> BaseModel:

@@ -17,6 +17,7 @@ from fraudstream.evaluation.quality import (
 )
 from fraudstream.experiments.protocol import load_protocol
 from fraudstream.models.calibrate import PlattCalibrator
+from fraudstream.models.registry import load_model_config
 from fraudstream.models.rules import RulesScorer
 from fraudstream.models.train import fit_lgbm_variant, train
 
@@ -28,9 +29,9 @@ def run(data: Path, out: Path, *, imbalance: str, test_start: int = 20, gap: int
     X_train, y_train = p.X[split.train], p.visible[split.train]
     scorers = {
         "rules": RulesScorer(p.feature_names).score,
-        "lr": train("lr", X_train, y_train, p.feature_names).score,
-        "lgbm": fit_lgbm_variant(imbalance, X_train, y_train),
-        "iforest": train("iforest", X_train, y_train, p.feature_names).score,
+        "lr": train(load_model_config("lr"), X_train, y_train, p.feature_names).score,
+        "lgbm": fit_lgbm_variant(imbalance, X_train, y_train, load_model_config("lgbm")),
+        "iforest": train(load_model_config("iforest"), X_train, y_train, p.feature_names).score,
     }
     y_val = p.visible[split.validation]
     y_test = p.truth[split.test]
