@@ -2,6 +2,7 @@
 
 import json
 import subprocess
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -12,6 +13,11 @@ from sklearn.ensemble import IsolationForest
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
+
+from fraudstream.models.focal import focal_loss_grad_hess
+from fraudstream.models.imbalance import correct_prior, undersample_indices
+
+IMBALANCE_VARIANTS = ("none", "class_weight", "scale_pos_weight", "undersample_prior", "focal")
 
 
 @dataclass
@@ -44,6 +50,11 @@ class ModelBundle:
                    manifest["feature_list"], manifest["threshold"], manifest["train_window"])
 
 
+def _lgbm(seed: int, **overrides) -> lgb.LGBMClassifier:
+    params = {"n_estimators": 100, "random_state": seed, "verbosity": -1, "n_jobs": 1}
+    return lgb.LGBMClassifier(**params, **overrides)
+
+
 def train(model: str, X, y, feature_list: list[str], *, seed: int = 0) -> ModelBundle:
     X = np.asarray(X, dtype=float)
     y = np.asarray(y, dtype=np.int8)
@@ -56,10 +67,59 @@ def train(model: str, X, y, feature_list: list[str], *, seed: int = 0) -> ModelB
     if model == "lr":
         estimator = make_pipeline(StandardScaler(), LogisticRegression(max_iter=1000, random_state=seed))
     elif model == "lgbm":
-        estimator = lgb.LGBMClassifier(n_estimators=100, random_state=seed, verbosity=-1, n_jobs=1)
+        estimator = _lgbm(seed)
     elif model == "iforest":
         estimator = IsolationForest(n_estimators=100, random_state=seed, n_jobs=1)
     else:
         raise ValueError(f"unknown model: {model}")
     estimator.fit(X, y)
     return ModelBundle(estimator, model, list(feature_list))
+
+
+def _positive_probability(model, X) -> np.ndarray:
+    return model.predict_proba(np.asarray(X, dtype=float))[:, 1]
+
+
+def _sigmoid(raw) -> np.ndarray:
+    # tanh form stays finite for large |raw|; exp(-raw) would overflow.
+    return 0.5 * (1.0 + np.tanh(0.5 * np.asarray(raw, dtype=float)))
+
+
+def _focal_objective(y_true, y_pred):
+    # LightGBM passes (labels, preds, weight, group) for >2 parameters; keep two.
+    return focal_loss_grad_hess(y_true, y_pred)
+
+
+def fit_lgbm_variant(variant: str, X, y, *, seed: int = 0) -> Callable[[object], np.ndarray]:
+    """Fit LightGBM under one imbalance strategy and return a probability-scale scorer.
+
+    Undersampled models are prior-corrected to the original class balance; focal
+    scores are sigmoid(raw margin). Callers calibrate on held-out validation data.
+    """
+    if variant not in IMBALANCE_VARIANTS:
+        raise ValueError(f"unknown imbalance variant: {variant}")
+    X = np.asarray(X, dtype=float)
+    y = np.asarray(y, dtype=np.int8)
+    if X.ndim != 2 or y.shape != (len(X),):
+        raise ValueError("training arrays must be aligned")
+    if not np.isfinite(X).all() or not np.isin(y, [0, 1]).all():
+        raise ValueError("training features must be finite and labels binary")
+    positives = int(y.sum())
+    negatives = len(y) - positives
+    if positives == 0 or negatives == 0:
+        raise ValueError("supervised training requires both label classes")
+    if variant == "undersample_prior":
+        chosen, retention = undersample_indices(y, negative_per_positive=10, seed=seed)
+        model = _lgbm(seed).fit(X[chosen], y[chosen])
+        return lambda Z: correct_prior(_positive_probability(model, Z), retention)
+    if variant == "focal":
+        model = _lgbm(seed, objective=_focal_objective).fit(X, y)
+        booster = model.booster_
+        return lambda Z: _sigmoid(booster.predict(np.asarray(Z, dtype=float), raw_score=True))
+    overrides = {
+        "none": {},
+        "class_weight": {"class_weight": "balanced"},
+        "scale_pos_weight": {"scale_pos_weight": negatives / positives},
+    }[variant]
+    model = _lgbm(seed, **overrides).fit(X, y)
+    return lambda Z: _positive_probability(model, Z)
