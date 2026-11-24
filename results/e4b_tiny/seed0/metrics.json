@@ -1,0 +1,146 @@
+{
+  "lgbm_imbalance": "none",
+  "calibration": "platt",
+  "results": [
+    {
+      "rule": "half",
+      "cost_ratio": 0.25,
+      "threshold": 0.5,
+      "alerts": 0,
+      "net_savings_usd": 0.0
+    },
+    {
+      "rule": "half",
+      "cost_ratio": 0.5,
+      "threshold": 0.5,
+      "alerts": 0,
+      "net_savings_usd": 0.0
+    },
+    {
+      "rule": "half",
+      "cost_ratio": 1.0,
+      "threshold": 0.5,
+      "alerts": 0,
+      "net_savings_usd": 0.0
+    },
+    {
+      "rule": "half",
+      "cost_ratio": 2.0,
+      "threshold": 0.5,
+      "alerts": 0,
+      "net_savings_usd": 0.0
+    },
+    {
+      "rule": "half",
+      "cost_ratio": 4.0,
+      "threshold": 0.5,
+      "alerts": 0,
+      "net_savings_usd": 0.0
+    },
+    {
+      "rule": "f1",
+      "cost_ratio": 0.25,
+      "threshold": 0.0025689515085770866,
+      "alerts": 62,
+      "net_savings_usd": 17215.744140625
+    },
+    {
+      "rule": "f1",
+      "cost_ratio": 0.5,
+      "threshold": 0.0025689515085770866,
+      "alerts": 62,
+      "net_savings_usd": 17125.494140625
+    },
+    {
+      "rule": "f1",
+      "cost_ratio": 1.0,
+      "threshold": 0.0025689515085770866,
+      "alerts": 62,
+      "net_savings_usd": 16944.994140625
+    },
+    {
+      "rule": "f1",
+      "cost_ratio": 2.0,
+      "threshold": 0.0025689515085770866,
+      "alerts": 62,
+      "net_savings_usd": 16583.994140625
+    },
+    {
+      "rule": "f1",
+      "cost_ratio": 4.0,
+      "threshold": 0.0025689515085770866,
+      "alerts": 62,
+      "net_savings_usd": 15861.994140625
+    },
+    {
+      "rule": "min_loss",
+      "cost_ratio": 0.25,
+      "threshold": 0.0021679044236721,
+      "alerts": 234,
+      "net_savings_usd": 25147.6435546875
+    },
+    {
+      "rule": "min_loss",
+      "cost_ratio": 0.5,
+      "threshold": 0.0021679044236721,
+      "alerts": 234,
+      "net_savings_usd": 24744.8935546875
+    },
+    {
+      "rule": "min_loss",
+      "cost_ratio": 1.0,
+      "threshold": 0.0025689515085770866,
+      "alerts": 62,
+      "net_savings_usd": 16944.994140625
+    },
+    {
+      "rule": "min_loss",
+      "cost_ratio": 2.0,
+      "threshold": 0.0025689515085770866,
+      "alerts": 62,
+      "net_savings_usd": 16583.994140625
+    },
+    {
+      "rule": "min_loss",
+      "cost_ratio": 4.0,
+      "threshold": 0.0025689515085770866,
+      "alerts": 62,
+      "net_savings_usd": 15861.994140625
+    },
+    {
+      "rule": "capacity",
+      "cost_ratio": 0.25,
+      "threshold": 0.02790510162259146,
+      "alerts": 8,
+      "net_savings_usd": 3376.3046875
+    },
+    {
+      "rule": "capacity",
+      "cost_ratio": 0.5,
+      "threshold": 0.02790510162259146,
+      "alerts": 8,
+      "net_savings_usd": 3366.3046875
+    },
+    {
+      "rule": "capacity",
+      "cost_ratio": 1.0,
+      "threshold": 0.02790510162259146,
+      "alerts": 8,
+      "net_savings_usd": 3346.3046875
+    },
+    {
+      "rule": "capacity",
+      "cost_ratio": 2.0,
+      "threshold": 0.02790510162259146,
+      "alerts": 8,
+      "net_savings_usd": 3306.3046875
+    },
+    {
+      "rule": "capacity",
+      "cost_ratio": 4.0,
+      "threshold": 0.02790510162259146,
+      "alerts": 8,
+      "net_savings_usd": 3226.3046875
+    }
+  ]
+}
