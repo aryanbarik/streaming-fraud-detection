@@ -11,12 +11,16 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 import yaml
-from sklearn.metrics import average_precision_score
 
 from fraudstream.config import CostConfig
 from fraudstream.evaluation.cost import net_savings
 from fraudstream.evaluation.labelview import LabelView
 from fraudstream.evaluation.metrics import pick_threshold
+from fraudstream.evaluation.quality import (
+    calibration_metrics,
+    daily_top_k_precision,
+    ranking_metrics,
+)
 from fraudstream.evaluation.splits import temporal_split
 from fraudstream.features.spec import FEATURES
 from fraudstream.models.calibrate import PlattCalibrator
@@ -56,11 +60,16 @@ def run(data: Path, out: Path, *, test_start: int = 20, gap: int = 2, validation
                                    amount[split.validation], costs)
         metrics[kind] = {
             "calibration": "platt" if kind in {"lr", "lgbm"} else "none",
-            "average_precision": float(average_precision_score(truth[split.test], test_score)),
+            **ranking_metrics(truth[split.test], test_score),
+            "daily_top_k_precision": daily_top_k_precision(
+                truth[split.test], test_score, days[split.test]
+            ),
             "net_savings_usd": net_savings(truth[split.test], test_score,
                                            amount[split.test], threshold, costs),
             "threshold": float(threshold) if np.isfinite(threshold) else None,
         }
+        if kind in {"lr", "lgbm"}:
+            metrics[kind].update(calibration_metrics(truth[split.test], test_score))
     config = {"test_start_day": test_start, "gap_days": gap, "validation_days": validation,
               "seed": 0, "train_rows": len(split.train), "validation_rows": len(split.validation),
               "test_rows": len(split.test), "cost": costs.model_dump(),
