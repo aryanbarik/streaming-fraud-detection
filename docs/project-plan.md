@@ -1,6 +1,6 @@
 # Project plan: streaming fraud detection (P3)
 
-> Appendix A of the approved implementation plan, verbatim, followed by the Step 3 amendments that apply to this project.
+> Step 3 amendments that apply to this project, followed by Appendix A of the approved implementation plan, verbatim.
 
 ### Step 3 — Project 3: streaming fraud detection (Appendix A, phases P0–P9)
 
