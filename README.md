@@ -10,6 +10,13 @@ flowchart LR
   C --> E[Evaluation and monitoring]
 ```
 
+
+## Offline smoke experiment
+
+`uv sync --frozen`, then run `make data-tiny`, `make backfill-tiny`, and
+`make e1-tiny`. This is an initial synthetic-data smoke run, not the full E1
+study. It uses one simulator seed and three baselines; the planned rules arm,
+confidence intervals, and streaming measurements are not yet implemented.
 <!-- results:start -->
 Not yet measured.
 <!-- results:end -->
