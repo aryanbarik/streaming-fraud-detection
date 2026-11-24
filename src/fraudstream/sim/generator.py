@@ -75,20 +75,38 @@ def generate(cfg: SimConfig, seed: int) -> pa.Table:
         terminals = np.fromiter(
             (rng.choice(eligible[card]) for card in cards), dtype=np.int32, count=n
         )
+        micros = rng.integers(0, 86_400_000_000, n, dtype=np.int64)
         scenario = np.zeros(n, dtype=np.int8)
         scenario[(compromised_until[terminals] > day) & (rng.random(n) < 0.05)] = Scenario.COMPROMISED_TERMINAL
         scenario[(stolen_until[cards] > day) & (rng.random(n) < 1 / 3)] = Scenario.STOLEN_CARD
-        scenario[rng.random(n) < rates["card_testing"]] = Scenario.CARD_TESTING
-        scenario[rng.random(n) < travel_rate] = Scenario.IMPOSSIBLE_TRAVEL
-        travel = scenario == Scenario.IMPOSSIBLE_TRAVEL
-        if travel.any():
-            terminals[travel] = rng.integers(0, cfg.n_terminals, travel.sum())
+        offsets = np.cumsum(n_by_card) - n_by_card
+        eligible_travel = np.flatnonzero(n_by_card >= 2)
+        travel_cards = eligible_travel[rng.random(len(eligible_travel)) < travel_rate]
+        for card in travel_cards:
+            first = offsets[card]
+            second = first + 1
+            micros[first] = rng.integers(0, 86_100_000_000)
+            micros[second] = micros[first] + 300_000_000
+            distance = ((terminal_xy - terminal_xy[terminals[first]]) ** 2).sum(axis=1)
+            terminals[second] = int(distance.argmax())
+            scenario[second] = Scenario.IMPOSSIBLE_TRAVEL
+        testing_candidates = np.flatnonzero(n_by_card >= 3)
+        testing_candidates = testing_candidates[~np.isin(testing_candidates, travel_cards)]
+        testing_cards = testing_candidates[
+            rng.random(len(testing_candidates)) < rates["card_testing"]
+        ]
+        for card in testing_cards:
+            first = offsets[card]
+            micros[first] = rng.integers(0, 86_340_000_000)
+            micros[first + 1] = micros[first] + 20_000_000
+            micros[first + 2] = micros[first] + 40_000_000
+            scenario[first:first + 3] = Scenario.CARD_TESTING
+            terminals[first:first + 3] = terminals[first]
         amount = card_amount[cards] * rng.lognormal(0, 0.5, n)
         amount[scenario == Scenario.STOLEN_CARD] *= 5
         amount[scenario == Scenario.CARD_TESTING] = rng.uniform(0.5, 2.0, (scenario == Scenario.CARD_TESTING).sum())
         if active and drift.kind == "benign_covariate":
             amount *= 1.5
-        micros = rng.integers(0, 86_400_000_000, n, dtype=np.int64)
         order = np.argsort(micros, kind="stable")
         event_ts = np.datetime64(start + timedelta(days=day), "us") + micros[order].astype("timedelta64[us]")
         cards, terminals, scenario, amount = cards[order], terminals[order], scenario[order], amount[order]

@@ -24,6 +24,24 @@ def test_each_scenario_generates_fraud(name, scenario):
     assert np.array_equal(tx["is_fraud"].to_numpy(), (scenarios != 0).astype(np.int8))
     if scenario == Scenario.CARD_TESTING:
         assert np.all(tx["amount"].to_numpy()[scenarios == scenario] <= 2)
+    rows = tx.to_pylist()
+    if scenario == Scenario.IMPOSSIBLE_TRAVEL:
+        previous = {}
+        for row in rows:
+            if row["scenario"] == scenario:
+                prior = previous[row["card_id"]]
+                assert 0 <= (row["event_ts"] - prior["event_ts"]).total_seconds() <= 300
+                assert np.hypot(row["x"] - prior["x"], row["y"] - prior["y"]) > 0.3
+            previous[row["card_id"]] = row
+    if scenario == Scenario.CARD_TESTING:
+        bursts = {}
+        for row in rows:
+            if row["scenario"] == scenario:
+                key = (row["card_id"], row["event_ts"].date())
+                bursts.setdefault(key, []).append(row)
+        assert any(len(group) >= 3 and
+                   (group[2]["event_ts"] - group[0]["event_ts"]).total_seconds() <= 40
+                   for group in bursts.values())
 
 
 def test_benign_drift_raises_volume_only_in_window():
