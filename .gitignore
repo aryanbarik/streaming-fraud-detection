@@ -1,8 +1,8 @@
 .env
-data/
-artifacts/
-models/
-checkpoints/
+/data/
+/artifacts/
+/models/
+/checkpoints/
 *.db
 .venv/
 __pycache__/
