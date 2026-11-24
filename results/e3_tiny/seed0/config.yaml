@@ -1,0 +1,7 @@
+gap_days: 2
+note: random CV covers all days; temporal controls use the held-out test window
+random_cv_folds: 5
+random_cv_labels: fully observed ground truth
+seed: 0
+test_start_day: 20
+validation_days: 4

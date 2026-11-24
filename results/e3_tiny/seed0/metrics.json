@@ -1,0 +1,26 @@
+{
+  "correct": {
+    "average_precision": 0.37508451116318303,
+    "net_savings_per_1000_usd": 833.9071919598917,
+    "average_precision_delta_vs_correct": 0.0,
+    "savings_per_1000_delta_vs_correct_usd": 0.0
+  },
+  "immediate_label_features": {
+    "average_precision": 0.36652009649266193,
+    "net_savings_per_1000_usd": 970.2906811331201,
+    "average_precision_delta_vs_correct": -0.008564414670521103,
+    "savings_per_1000_delta_vs_correct_usd": 136.38348917322833
+  },
+  "non_pit_terminal_features": {
+    "average_precision": 0.10952192118264868,
+    "net_savings_per_1000_usd": 1034.912734144316,
+    "average_precision_delta_vs_correct": -0.26556258998053434,
+    "savings_per_1000_delta_vs_correct_usd": 201.00554218442414
+  },
+  "random_stratified_kfold": {
+    "average_precision": 0.5579930624530164,
+    "net_savings_per_1000_usd": 1078.6264532185814,
+    "average_precision_delta_vs_correct": 0.18290855128983335,
+    "savings_per_1000_delta_vs_correct_usd": 244.7192612586897
+  }
+}
