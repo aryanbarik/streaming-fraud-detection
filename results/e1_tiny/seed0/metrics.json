@@ -1,21 +1,37 @@
 {
   "rules": {
+    "calibration": "none",
     "average_precision": 0.024151485241196136,
+    "recall_at_fpr_1pct": 0.0,
+    "daily_top_k_precision": 0.1,
     "net_savings_usd": 0.0,
     "threshold": null
   },
   "lr": {
+    "calibration": "platt",
     "average_precision": 0.21899196947335428,
+    "recall_at_fpr_1pct": 0.32978723404255317,
+    "daily_top_k_precision": 0.39999999999999997,
     "net_savings_usd": 23010.3173828125,
-    "threshold": 0.07289969999593084
+    "threshold": 0.0025636462044157167,
+    "brier": 0.00913773092186227,
+    "ece": 0.006979768097687342
   },
   "lgbm": {
+    "calibration": "platt",
     "average_precision": 0.37508451116318303,
+    "recall_at_fpr_1pct": 0.48936170212765956,
+    "daily_top_k_precision": 0.7666666666666666,
     "net_savings_usd": 16944.994140625,
-    "threshold": 0.050431639187975906
+    "threshold": 0.0025689515085770866,
+    "brier": 0.009165766071720807,
+    "ece": 0.007067337382765751
   },
   "iforest": {
+    "calibration": "none",
     "average_precision": 0.08739319557367234,
+    "recall_at_fpr_1pct": 0.13297872340425532,
+    "daily_top_k_precision": 0.3833333333333333,
     "net_savings_usd": 0.0,
     "threshold": null
   }
