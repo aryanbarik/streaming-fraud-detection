@@ -15,3 +15,8 @@ backfill-tiny:
 	@free=$$(df -BG --output=avail /home | tail -1 | tr -dc '0-9'); \
 	  test "$$free" -ge 16 || { echo 'disk guard: need at least 16 GB free'; exit 1; }
 	uv run python -m fraudstream.features.backfill --transactions data/sim/seed0/transactions.parquet --labels data/sim/seed0/labels.parquet --out data/sim/seed0/features.parquet
+
+e1-tiny:
+	@free=$$(df -BG --output=avail /home | tail -1 | tr -dc '0-9'); \
+	  test "$$free" -ge 16 || { echo 'disk guard: need at least 16 GB free'; exit 1; }
+	uv run python -m fraudstream.experiments.e1_models --data data/sim/seed0 --out results/e1_tiny/seed0
