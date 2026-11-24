@@ -3,6 +3,7 @@ cost:
   fraud_fixed_fee_usd: 0
   review_usd: 5
 gap_days: 2
+lgbm_imbalance: none
 seed: 0
 test_rows: 20320
 test_start_day: 20

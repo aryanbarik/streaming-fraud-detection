@@ -1,0 +1,66 @@
+{
+  "selected_variant": "none",
+  "selection_rule": "max validation average precision",
+  "variants": {
+    "none": {
+      "validation_average_precision": 0.20488647549363911,
+      "average_precision": 0.37508451116318303,
+      "recall_at_fpr_1pct": 0.48936170212765956,
+      "brier": 0.009165766071720807,
+      "ece": 0.007067337382765751,
+      "uncalibrated_brier": 0.008121816339838824,
+      "uncalibrated_ece": 0.00820595732315631,
+      "daily_top_k_precision": 0.7666666666666666,
+      "net_savings_usd": 16944.994140625,
+      "threshold": 0.0025689515085770866
+    },
+    "class_weight": {
+      "validation_average_precision": 0.19006259746519985,
+      "average_precision": 0.3483021324181065,
+      "recall_at_fpr_1pct": 0.5212765957446809,
+      "brier": 0.008975337321724062,
+      "ece": 0.007099874093903082,
+      "uncalibrated_brier": 0.007429376684742789,
+      "uncalibrated_ece": 0.005741377117025942,
+      "daily_top_k_precision": 0.6666666666666666,
+      "net_savings_usd": 18092.5390625,
+      "threshold": 0.0037411896786997737
+    },
+    "scale_pos_weight": {
+      "validation_average_precision": 0.003969392803221609,
+      "average_precision": 0.030806131263145232,
+      "recall_at_fpr_1pct": 0.0,
+      "brier": 0.009185525898812181,
+      "ece": 0.0070679894296994325,
+      "uncalibrated_brier": 0.13666338606852332,
+      "uncalibrated_ece": 0.13666324227284668,
+      "daily_top_k_precision": 0.03333333333333333,
+      "net_savings_usd": 0.0,
+      "threshold": null
+    },
+    "undersample_prior": {
+      "validation_average_precision": 0.10409274623302348,
+      "average_precision": 0.3974615780795785,
+      "recall_at_fpr_1pct": 0.574468085106383,
+      "brier": 0.009001630636821712,
+      "ece": 0.007134752355238836,
+      "uncalibrated_brier": 0.007324908761278161,
+      "uncalibrated_ece": 0.005996274493593638,
+      "daily_top_k_precision": 0.7333333333333333,
+      "net_savings_usd": 27920.93359375,
+      "threshold": 0.0021101357555047932
+    },
+    "focal": {
+      "validation_average_precision": 0.19024666555746378,
+      "average_precision": 0.4042026050525713,
+      "recall_at_fpr_1pct": 0.5212765957446809,
+      "brier": 0.009190467533222937,
+      "ece": 0.007040561246378668,
+      "uncalibrated_brier": 0.007811909319533907,
+      "uncalibrated_ece": 0.021538104356670907,
+      "daily_top_k_precision": 0.8666666666666666,
+      "net_savings_usd": 26517.0390625,
+      "threshold": 0.0026490427608824654
+    }
+  }
+}
