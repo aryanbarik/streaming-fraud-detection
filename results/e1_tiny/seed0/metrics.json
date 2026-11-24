@@ -1,17 +1,22 @@
 {
+  "rules": {
+    "average_precision": 0.024151485241196136,
+    "net_savings_usd": 0.0,
+    "threshold": null
+  },
   "lr": {
-    "average_precision": 0.21850002719479436,
-    "net_savings_usd": 23409.9296875,
-    "threshold": 0.045507204231603364
+    "average_precision": 0.21899196947335428,
+    "net_savings_usd": 23010.3173828125,
+    "threshold": 0.07289969999593084
   },
   "lgbm": {
-    "average_precision": 0.2558228259039378,
-    "net_savings_usd": 18569.1953125,
-    "threshold": 0.006649670205568465
+    "average_precision": 0.37508451116318303,
+    "net_savings_usd": 16944.994140625,
+    "threshold": 0.050431639187975906
   },
   "iforest": {
-    "average_precision": 0.06597619733159077,
-    "net_savings_usd": 6383.546875,
-    "threshold": 0.15797370087261753
+    "average_precision": 0.08739319557367234,
+    "net_savings_usd": 0.0,
+    "threshold": null
   }
 }
