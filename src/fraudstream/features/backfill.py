@@ -1,5 +1,6 @@
 """Replay transaction and label streams in availability order."""
 
+import argparse
 import heapq
 from collections import defaultdict
 from itertools import chain
@@ -65,3 +66,17 @@ def backfill(transactions: pa.Table, labels: pa.Table, out: Path) -> None:
                 rows.clear()
         if rows:
             writer.write_table(pa.Table.from_pylist(rows, schema=schema))
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--transactions", type=Path, required=True)
+    parser.add_argument("--labels", type=Path, required=True)
+    parser.add_argument("--out", type=Path, required=True)
+    args = parser.parse_args()
+    backfill(pq.read_table(args.transactions), pq.read_table(args.labels), args.out)
+    print(f"wrote {pq.read_metadata(args.out).num_rows} feature rows to {args.out}")
+
+
+if __name__ == "__main__":
+    main()
