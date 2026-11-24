@@ -1,0 +1,29 @@
+[project]
+name = "streaming-fraud-detection"
+version = "0.1.0"
+description = "Event-time streaming fraud detection and evaluation"
+readme = "README.md"
+authors = [{ name = "Aryan Barik", email = "aryan.kunmoon@gmail.com" }]
+requires-python = ">=3.12,<3.13"
+dependencies = ["numpy<3", "pandas<3", "pyarrow", "pydantic-settings", "pyyaml"]
+
+[dependency-groups]
+dev = ["pytest", "ruff"]
+feast = ["feast==0.68.0"]
+ml = ["lightgbm==4.7.0", "scikit-learn", "river==0.27.0"]
+stream = ["quixstreams==3.28.1", "redis", "prometheus-client", "orjson"]
+eval = ["matplotlib", "duckdb"]
+
+[build-system]
+requires = ["uv_build>=0.12.21,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "fraudstream"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["network: needs network", "slow: long-running", "gpu: needs GPU", "docker: needs Docker"]
+
+[tool.ruff]
+line-length = 100
