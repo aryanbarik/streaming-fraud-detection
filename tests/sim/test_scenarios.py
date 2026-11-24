@@ -37,3 +37,8 @@ def test_benign_drift_raises_volume_only_in_window():
     plain, altered = counts(tx), counts(drift)
     assert plain[0] == altered[0]
     assert altered[4:8].sum() > plain[4:8].sum() * 1.2
+    for day in (*range(4), *range(8, 12)):
+        date = np.datetime64("2025-01-01") + np.timedelta64(day, "D")
+        a = tx.filter(tx["event_ts"].to_numpy().astype("datetime64[D]") == date)
+        b = drift.filter(drift["event_ts"].to_numpy().astype("datetime64[D]") == date)
+        assert a.drop(["tx_id"]).equals(b.drop(["tx_id"]))

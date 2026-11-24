@@ -52,6 +52,8 @@ def generate(cfg: SimConfig, seed: int) -> pa.Table:
     for day in range(cfg.days):
         drift = cfg.drift
         active = drift.start_day <= day < drift.end_day
+        rng = np.random.default_rng(np.random.SeedSequence([seed, day, 1]))
+        campaign_rng = np.random.default_rng(np.random.SeedSequence([seed, day, 2]))
         volume = 1.4 if active and drift.kind == "benign_covariate" else 1.0
         n_by_card = rng.poisson(card_rate * volume)
         cards = np.repeat(np.arange(cfg.n_customers, dtype=np.int32), n_by_card)
@@ -66,8 +68,8 @@ def generate(cfg: SimConfig, seed: int) -> pa.Table:
             factor = 1 + 2 * min(1, (day - drift.start_day) / span)
             compromise_rate = min(1.0, compromise_rate * factor)
             travel_rate = min(1.0, travel_rate * factor)
-        newly_compromised = rng.random(cfg.n_terminals) < compromise_rate
-        newly_stolen = rng.random(cfg.n_customers) < rates["stolen_card"]
+        newly_compromised = campaign_rng.random(cfg.n_terminals) < compromise_rate
+        newly_stolen = campaign_rng.random(cfg.n_customers) < rates["stolen_card"]
         compromised_until[newly_compromised] = day + 28
         stolen_until[newly_stolen] = day + 14
         terminals = np.fromiter(
