@@ -1,0 +1,18 @@
+n_customers: 10000
+n_terminals: 3000
+days: 180
+radius: 0.1
+labels:
+  p_report: 0.85
+  median_delay_days: 7
+  sigma: 0.8
+drift:
+  kind: none
+  start_day: 100
+  end_day: 130
+  magnitude: 1.0
+scenarios:
+  compromised_terminal: {rate_per_day: 0.0015}
+  stolen_card: {rate_per_day: 0.0015}
+  card_testing: {rate_per_day: 0.001}
+  impossible_travel: {rate_per_day: 0.001}
