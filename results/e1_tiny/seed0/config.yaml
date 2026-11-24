@@ -1,0 +1,12 @@
+cost:
+  fp_friction_usd: 3
+  fraud_fixed_fee_usd: 0
+  review_usd: 5
+gap_days: 2
+seed: 0
+test_rows: 20320
+test_start_day: 20
+train_rows: 28213
+training_labels_as_of: '2025-01-21T00:00:00'
+validation_days: 4
+validation_rows: 8173

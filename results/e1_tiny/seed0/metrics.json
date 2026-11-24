@@ -1,0 +1,17 @@
+{
+  "lr": {
+    "average_precision": 0.21850002719479436,
+    "net_savings_usd": 23409.9296875,
+    "threshold": 0.045507204231603364
+  },
+  "lgbm": {
+    "average_precision": 0.2558228259039378,
+    "net_savings_usd": 18569.1953125,
+    "threshold": 0.006649670205568465
+  },
+  "iforest": {
+    "average_precision": 0.06597619733159077,
+    "net_savings_usd": 6383.546875,
+    "threshold": 0.15797370087261753
+  }
+}
