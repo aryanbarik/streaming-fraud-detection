@@ -19,6 +19,7 @@ from fraudstream.evaluation.labelview import LabelView
 from fraudstream.evaluation.metrics import pick_threshold
 from fraudstream.evaluation.splits import temporal_split
 from fraudstream.features.spec import FEATURES
+from fraudstream.models.rules import RulesScorer
 from fraudstream.models.train import train
 
 
@@ -41,8 +42,9 @@ def run(data: Path, out: Path, *, test_start: int = 20, gap: int = 2, validation
     truth = frame["is_fraud"].to_numpy(dtype=int)
     costs = CostConfig()
     metrics = {}
-    for kind in ("lr", "lgbm", "iforest"):
-        bundle = train(kind, X[split.train], visible[split.train], feature_names)
+    for kind in ("rules", "lr", "lgbm", "iforest"):
+        bundle = (RulesScorer(feature_names) if kind == "rules"
+                  else train(kind, X[split.train], visible[split.train], feature_names))
         val_score = bundle.score(X[split.validation])
         threshold = pick_threshold("min_loss", visible[split.validation], val_score,
                                    amount[split.validation], costs)
