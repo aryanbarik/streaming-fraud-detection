@@ -19,6 +19,7 @@ from fraudstream.evaluation.labelview import LabelView
 from fraudstream.evaluation.metrics import pick_threshold
 from fraudstream.evaluation.splits import temporal_split
 from fraudstream.features.spec import FEATURES
+from fraudstream.models.calibrate import PlattCalibrator
 from fraudstream.models.rules import RulesScorer
 from fraudstream.models.train import train
 
@@ -46,10 +47,15 @@ def run(data: Path, out: Path, *, test_start: int = 20, gap: int = 2, validation
         bundle = (RulesScorer(feature_names) if kind == "rules"
                   else train(kind, X[split.train], visible[split.train], feature_names))
         val_score = bundle.score(X[split.validation])
+        test_score = bundle.score(X[split.test])
+        if kind in {"lr", "lgbm"}:
+            calibrator = PlattCalibrator().fit(val_score, visible[split.validation])
+            val_score = calibrator.predict(val_score)
+            test_score = calibrator.predict(test_score)
         threshold = pick_threshold("min_loss", visible[split.validation], val_score,
                                    amount[split.validation], costs)
-        test_score = bundle.score(X[split.test])
         metrics[kind] = {
+            "calibration": "platt" if kind in {"lr", "lgbm"} else "none",
             "average_precision": float(average_precision_score(truth[split.test], test_score)),
             "net_savings_usd": net_savings(truth[split.test], test_score,
                                            amount[split.test], threshold, costs),
