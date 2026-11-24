@@ -25,6 +25,16 @@ def _events(table: pa.Table, time_field: str, priority: int):
             yield timestamp, priority, row
 
 
+def availability_timeline(transactions: pa.Table, labels: pa.Table):
+    """Yield (timestamp, priority, row) for labels and transactions in availability order.
+
+    Labels (priority 0) sort before transactions (priority 1) at the same timestamp, so a
+    label is visible to a transaction at its own timestamp.
+    """
+    return heapq.merge(_events(labels, "available_ts", 0),
+                       _events(transactions, "event_ts", 1), key=lambda e: (e[0], e[1]))
+
+
 def backfill(transactions: pa.Table, labels: pa.Table, out: Path) -> None:
     """Write one feature row per transaction using only available information.
 
@@ -44,8 +54,7 @@ def backfill(transactions: pa.Table, labels: pa.Table, out: Path) -> None:
     rows = []
     out.parent.mkdir(parents=True, exist_ok=True)
     with pq.ParquetWriter(out, schema) as writer:
-        events = heapq.merge(_events(labels, "available_ts", 0),
-                             _events(transactions, "event_ts", 1), key=lambda e: (e[0], e[1]))
+        events = availability_timeline(transactions, labels)
         for timestamp, priority, row in events:
             if priority == 0:
                 if row["kind"] != "fraud":
