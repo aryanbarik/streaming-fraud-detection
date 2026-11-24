@@ -18,6 +18,9 @@ eval = ["matplotlib", "duckdb"]
 requires = ["uv_build>=0.12.21,<0.13.0"]
 build-backend = "uv_build"
 
+[tool.uv]
+default-groups = ["dev", "ml"]
+
 [tool.uv.build-backend]
 module-name = "fraudstream"
 
